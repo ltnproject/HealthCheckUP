@@ -1238,17 +1238,20 @@ window.sendMessage = async function () {
             alert('Water reminders stopped');
         };
 
-     // Tab switching
 window.switchTab = function(tabName, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-    if (btn) btn.classList.add('active');
+    
+    btn.classList.add('active');
     document.getElementById(tabName).classList.add('active');
-
-    if (tabName === 'dashboard') updateDashboard();
-    if (tabName === 'blood-sugar') loadBloodSugarLogs();
-    if (tabName === 'meals') loadMealLogs();
+    
+    if (tabName === 'dashboard') {
+        updateDashboard();
+    if (tabName === 'blood-sugar') {
+        loadBloodSugarLogs();
+    if (tabName === 'meals') {
+        loadMealLogs();
+    }
 };
 
 
