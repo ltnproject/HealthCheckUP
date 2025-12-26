@@ -1005,19 +1005,7 @@
 
         //Helper
 
-        function addChatMessage(text, sender, id = null) {
-  const container = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-
-  div.className = `chat-message ${sender}`;
-  if (id) div.id = `msg-${id}`;
-
-  div.textContent = text;
-  container.appendChild(div);
-
-  container.scrollTop = container.scrollHeight;
-}
-
+       
 
 
 //AI CHAT
