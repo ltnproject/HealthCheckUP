@@ -311,7 +311,6 @@
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
     <div id="loginScreen" class="login-container">
         <h2>🏥 Health Checkup</h2>
         <p style="margin-bottom: 30px; color: #6c757d;">Sign in to track your health data</p>
@@ -334,7 +333,6 @@
         <button class="btn btn-secondary" onclick="signUpWithEmail()">Create Account</button>
     </div>
 
-    <!-- Main App -->
     <div id="mainApp" class="container hidden">
         <div class="header">
             <h1>🏥 Health Checkup & Diabetes Helper</h1>
@@ -360,7 +358,6 @@
         </div>
 
         <div class="content">
-            <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content active">
                 <h2>Your Health Dashboard</h2>
                 <div class="stats-grid">
@@ -384,7 +381,6 @@
                 <div id="recentLogs" style="margin-top: 30px;"></div>
             </div>
 
-            <!-- Blood Sugar Tab -->
             <div id="blood-sugar" class="tab-content">
                 <h2>Blood Sugar Tracker</h2>
                 <p style="margin-bottom: 20px; color: #6c757d;">Track your blood glucose levels. Use a glucometer to measure, then log the result here.</p>
@@ -413,7 +409,6 @@
                 <div id="bloodSugarLogs"></div>
             </div>
 
-            <!-- Meals Tab -->
             <div id="meals" class="tab-content">
                 <h2>Meal & Carb Tracker</h2>
                 <div class="input-group">
@@ -443,7 +438,6 @@
                 <div id="mealLogs"></div>
             </div>
 
-            <!-- Calculators Tab -->
             <div id="calculators" class="tab-content">
                 <h2>Health Calculators</h2>
                 
@@ -490,7 +484,6 @@
                 </div>
             </div>
 
-            <!-- AI Chat Tab -->
             <div id="ai-chat" class="tab-content">
                 <h2>AI Health Assistant</h2>
                 <p style="margin-bottom: 15px;">Ask me anything about diabetes, nutrition, lifestyle, or general health questions!</p>
@@ -508,7 +501,6 @@
                 </div>
             </div>
 
-            <!-- Reminders Tab -->
             <div id="reminders" class="tab-content">
                 <h2>💧 Water & Health Reminders</h2>
                 
@@ -558,7 +550,6 @@
                 </div>
             </div>
 
-            <!-- Education Tab -->
             <div id="education" class="tab-content">
                 <h2>Diabetes Education</h2>
                 
@@ -601,10 +592,9 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCjUqdLToR_nCpKDgSM2rwovuBFqgQ9S_8",
@@ -619,13 +609,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const analytics = getAnalytics(app);
 
         let currentUser = null;
         let waterReminderInterval = null;
         let notificationPermission = false;
 
-        // Auth state observer
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -640,7 +628,6 @@
             }
         });
 
-        // Auth functions
         window.signInWithGoogle = async function() {
             const provider = new GoogleAuthProvider();
             try {
@@ -697,7 +684,6 @@
             }
         };
 
-        // Load user data
         async function loadUserData() {
             loadBloodSugarLogs();
             loadMealLogs();
@@ -705,7 +691,6 @@
             updateDashboard();
         }
 
-        // Blood Sugar functions
         window.logBloodSugar = async function() {
             const level = document.getElementById('bloodSugarInput').value;
             const timing = document.getElementById('bloodSugarTiming').value;
@@ -752,16 +737,14 @@
                 }
 
                 container.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const log = doc.data();
+                snapshot.forEach(docSnapshot => {
+                    const log = docSnapshot.data();
                     const div = document.createElement('div');
                     div.className = 'log-entry';
-                    div.innerHTML = `
-                        <div class="log-entry-time">${new Date(log.timestamp).toLocaleString()}</div>
-                        <strong>${log.level} mg/dL</strong> - ${log.timing}
-                        ${log.notes ? `<br><em>${log.notes}</em>` : ''}
-                        <button class="btn btn-danger" style="float: right; padding: 5px 10px; margin-top: -5px;" onclick="deleteBloodSugar('${doc.id}')">Delete</button>
-                    `;
+                    div.innerHTML = '<div class="log-entry-time">' + new Date(log.timestamp).toLocaleString() + '</div>' +
+                        '<strong>' + log.level + ' mg/dL</strong> - ' + log.timing +
+                        (log.notes ? '<br><em>' + log.notes + '</em>' : '') +
+                        '<button class="btn btn-danger" style="float: right; padding: 5px 10px; margin-top: -5px;" onclick="deleteBloodSugar(\'' + docSnapshot.id + '\')">Delete</button>';
                     container.appendChild(div);
                 });
             } catch (error) {
@@ -781,7 +764,6 @@
             }
         };
 
-        // Meal functions
         window.logMeal = async function() {
             const type = document.getElementById('mealType').value;
             const description = document.getElementById('mealDescription').value;
@@ -829,11 +811,11 @@
                 const container = document.getElementById('mealLogs');
                 const todayMeals = [];
                 
-                snapshot.forEach(doc => {
-                    const log = doc.data();
+                snapshot.forEach(docSnapshot => {
+                    const log = docSnapshot.data();
                     const logDate = new Date(log.timestamp);
                     if (logDate >= today) {
-                        todayMeals.push({ id: doc.id, ...log });
+                        todayMeals.push({ id: docSnapshot.id, ...log });
                     }
                 });
 
@@ -846,14 +828,12 @@
                 todayMeals.forEach(log => {
                     const div = document.createElement('div');
                     div.className = 'log-entry';
-                    div.innerHTML = `
-                        <div class="log-entry-time">${new Date(log.timestamp).toLocaleTimeString()}</div>
-                        <strong>${log.type.charAt(0).toUpperCase() + log.type.slice(1)}</strong>
-                        <p>${log.description}</p>
-                        ${log.carbs ? `<span>Carbs: ${log.carbs}g</span>` : ''}
-                        ${log.calories ? `<span style="margin-left: 15px;">Calories: ${log.calories}</span>` : ''}
-                        <button class="btn btn-danger" style="float: right; padding: 5px 10px; margin-top: -5px;" onclick="deleteMeal('${log.id}')">Delete</button>
-                    `;
+                    div.innerHTML = '<div class="log-entry-time">' + new Date(log.timestamp).toLocaleTimeString() + '</div>' +
+                        '<strong>' + log.type.charAt(0).toUpperCase() + log.type.slice(1) + '</strong>' +
+                        '<p>' + log.description + '</p>' +
+                        (log.carbs ? '<span>Carbs: ' + log.carbs + 'g</span>' : '') +
+                        (log.calories ? '<span style="margin-left: 15px;">Calories: ' + log.calories + '</span>' : '') +
+                        '<button class="btn btn-danger" style="float: right; padding: 5px 10px; margin-top: -5px;" onclick="deleteMeal(\'' + log.id + '\')">Delete</button>';
                     container.appendChild(div);
                 });
             } catch (error) {
@@ -873,10 +853,8 @@
             }
         };
 
-        // Dashboard
         async function updateDashboard() {
             try {
-                // Blood sugar average
                 const bsQuery = query(
                     collection(db, 'bloodSugarLogs'),
                     where('userId', '==', currentUser.uid),
@@ -887,8 +865,8 @@
                 
                 if (!bsSnapshot.empty) {
                     let total = 0;
-                    bsSnapshot.forEach(doc => {
-                        total += doc.data().level;
+                    bsSnapshot.forEach(docSnapshot => {
+                        total += docSnapshot.data().level;
                     });
                     const avg = total / bsSnapshot.size;
                     document.getElementById('avgBloodSugar').textContent = avg.toFixed(0);
@@ -898,7 +876,6 @@
                     document.getElementById('totalLogs').textContent = '0';
                 }
 
-                // Today's meals
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 
@@ -910,27 +887,24 @@
                 const mealsSnapshot = await getDocs(mealsQuery);
                 
                 let todayCount = 0;
-                mealsSnapshot.forEach(doc => {
-                    const logDate = new Date(doc.data().timestamp);
+                mealsSnapshot.forEach(docSnapshot => {
+                    const logDate = new Date(docSnapshot.data().timestamp);
                     if (logDate >= today) todayCount++;
                 });
                 
                 document.getElementById('todayMeals').textContent = todayCount;
 
-                // Recent activity
                 const recentDiv = document.getElementById('recentLogs');
                 recentDiv.innerHTML = '<h3>Recent Activity</h3>';
                 
                 if (!bsSnapshot.empty) {
                     const recent = [];
-                    bsSnapshot.forEach(doc => recent.push(doc.data()));
+                    bsSnapshot.forEach(docSnapshot => recent.push(docSnapshot.data()));
                     recent.slice(0, 5).forEach(log => {
                         const div = document.createElement('div');
                         div.className = 'log-entry';
-                        div.innerHTML = `
-                            <div class="log-entry-time">${new Date(log.timestamp).toLocaleString()}</div>
-                            <strong>${log.level} mg/dL</strong> - ${log.timing}
-                        `;
+                        div.innerHTML = '<div class="log-entry-time">' + new Date(log.timestamp).toLocaleString() + '</div>' +
+                            '<strong>' + log.level + ' mg/dL</strong> - ' + log.timing;
                         recentDiv.appendChild(div);
                     });
                 }
@@ -939,7 +913,6 @@
             }
         }
 
-        // Calculators
         window.calculateBMI = function() {
             const weight = parseFloat(document.getElementById('bmiWeight').value);
             const height = parseFloat(document.getElementById('bmiHeight').value) / 100;
@@ -957,12 +930,7 @@
             else if (bmi < 30) category = 'Overweight';
             else category = 'Obese';
 
-            document.getElementById('bmiResult').innerHTML = `
-                <div class="calculator-result">
-                    <strong>Your BMI: ${bmi}</strong><br>
-                    Category: ${category}
-                </div>
-            `;
+            document.getElementById('bmiResult').innerHTML = '<div class="calculator-result"><strong>Your BMI: ' + bmi + '</strong><br>Category: ' + category + '</div>';
         };
 
         window.calculateA1C = function() {
@@ -975,12 +943,7 @@
 
             const a1c = ((avgBS + 46.7) / 28.7).toFixed(1);
 
-            document.getElementById('a1cResult').innerHTML = `
-                <div class="calculator-result">
-                    <strong>Estimated A1C: ${a1c}%</strong><br>
-                    This is an estimate based on your average blood sugar. Get an actual A1C test from your doctor for accurate results.
-                </div>
-            `;
+            document.getElementById('a1cResult').innerHTML = '<div class="calculator-result"><strong>Estimated A1C: ' + a1c + '%</strong><br>This is an estimate based on your average blood sugar. Get an actual A1C test from your doctor for accurate results.</div>';
         };
 
         window.calculateInsulin = function() {
@@ -994,59 +957,61 @@
 
             const insulin = (carbs / ratio).toFixed(1);
 
-            document.getElementById('insulinResult').innerHTML = `
-                <div class="calculator-result">
-                    <strong>Insulin needed: ${insulin} units</strong><br>
-                    Always consult with your doctor before taking insulin. This is just a calculation tool.
-                </div>
-            `;
+            document.getElementById('insulinResult').innerHTML = '<div class="calculator-result"><strong>Insulin needed: ' + insulin + ' units</strong><br>Always consult with your doctor before taking insulin. This is just a calculation tool.</div>';
         };
 
-        // AI Chat
-      function addChatMessage(text, sender, id = null) { 
-          const container = document.getElementById("chatMessages"); 
-          const div = document.createElement("div"); div.className = chat-message ${sender}; 
-          if (id) div.id = id; div.textContent = text; 
-          container.appendChild(div); container.scrollTop = container.scrollHeight; 
-      }
-        
-    window.sendMessage = async function () {
-    const input = document.getElementById("chatInput");
-    const text = input.value.trim();
-    if (!text) return;
-
-    addChatMessage(text, "user");
-    input.value = "";
-
-    addChatMessage("Thinking...", "ai", "msg-thinking");
-
-    try {
-        const response = await fetch("https://notional-alfonzo-rodlike.ngrok-free.dev/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ message: text })
-        });
-
-        const data = await response.json();
-        const reply = data.reply || "No response from AI.";
-
-        const thinkingMsg = document.getElementById("msg-thinking");
-        if (thinkingMsg) thinkingMsg.textContent = reply;
-
-    } catch (err) {
-        console.error(err);
-        const thinkingMsg = document.getElementById("msg-thinking");
-        if (thinkingMsg) {
-            thinkingMsg.textContent = "❌ AI server offline.";
+        function addChatMessage(text, sender, id) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-message ' + sender;
+            if (id) div.id = id;
+            div.textContent = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
         }
-    }
-};
 
+        window.sendMessage = async function() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
 
+            addChatMessage(text, 'user');
+            input.value = '';
 
-        // Water tracking
+            addChatMessage('Thinking...', 'ai', 'msg-thinking');
+
+            try {
+                const response = await fetch('https://notional-alfonzo-rodlike.ngrok-free.dev/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    body: JSON.stringify({ message: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Server returned ' + response.status);
+                }
+
+                const data = await response.json();
+                const reply = data.reply || 'No response from AI.';
+
+                const thinkingMsg = document.getElementById('msg-thinking');
+                if (thinkingMsg) {
+                    thinkingMsg.textContent = reply;
+                    thinkingMsg.removeAttribute('id');
+                }
+            } catch (err) {
+                console.error('AI Chat Error:', err);
+                const thinkingMsg = document.getElementById('msg-thinking');
+                if (thinkingMsg) {
+                    thinkingMsg.textContent = '❌ Unable to reach AI server. Please check your server is running at: https://notional-alfonzo-rodlike.ngrok-free.dev/chat';
+                    thinkingMsg.removeAttribute('id');
+                }
+            }
+        };
+
         async function loadWaterCount() {
             try {
                 const today = new Date().toDateString();
@@ -1058,8 +1023,8 @@
                 const snapshot = await getDocs(waterQuery);
                 
                 let count = 0;
-                snapshot.forEach(doc => {
-                    count = doc.data().count || 0;
+                snapshot.forEach(docSnapshot => {
+                    count = docSnapshot.data().count || 0;
                 });
                 
                 updateWaterDisplay(count);
@@ -1082,9 +1047,9 @@
                 let docId = null;
                 
                 if (!snapshot.empty) {
-                    snapshot.forEach(doc => {
-                        docId = doc.id;
-                        currentCount = doc.data().count || 0;
+                    snapshot.forEach(docSnapshot => {
+                        docId = docSnapshot.id;
+                        currentCount = docSnapshot.data().count || 0;
                     });
                     await updateDoc(doc(db, 'waterTracking', docId), {
                         count: currentCount + 1
@@ -1115,8 +1080,8 @@
                     );
                     const snapshot = await getDocs(waterQuery);
                     
-                    snapshot.forEach(async (document) => {
-                        await deleteDoc(doc(db, 'waterTracking', document.id));
+                    snapshot.forEach(async (docSnapshot) => {
+                        await deleteDoc(doc(db, 'waterTracking', docSnapshot.id));
                     });
                     
                     updateWaterDisplay(0);
@@ -1134,7 +1099,6 @@
             document.getElementById('waterProgress').style.width = percentage + '%';
         }
 
-        // Notifications
         async function checkNotificationPermission() {
             if ('Notification' in window) {
                 notificationPermission = Notification.permission === 'granted';
@@ -1197,10 +1161,10 @@
                 showNotification('💧 Hydration Reminder', 'Time to drink some water! Staying hydrated helps manage blood sugar levels.');
             }, intervalMs);
 
-            document.getElementById('reminderStatusText').innerHTML = `✅ Active - every ${intervalMinutes} minutes`;
+            document.getElementById('reminderStatusText').innerHTML = '✅ Active - every ' + intervalMinutes + ' minutes';
             document.getElementById('reminderStatus').style.background = '#d4edda';
 
-            alert(`Water reminders started! You'll get a notification every ${intervalMinutes} minutes.`);
+            alert('Water reminders started! You will get a notification every ' + intervalMinutes + ' minutes.');
         };
 
         window.stopWaterReminders = function() {
@@ -1231,7 +1195,6 @@
             }
         };
 
-        // Initialize
         checkNotificationPermission();
     </script>
 </body>
