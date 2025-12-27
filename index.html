@@ -1003,16 +1003,6 @@
         };
 
         // AI Chat
-        function addChatMessage(text, sender, id = null) {
-            const container = document.getElementById("chatMessages");
-            const div = document.createElement("div");
-            div.className = `chat-message ${sender}`;
-            if (id) div.id = id;
-            div.textContent = text;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
        window.sendMessage = async function () {
     const input = document.getElementById("chatInput");
     const text = input.value.trim();
@@ -1024,14 +1014,12 @@
     addChatMessage("Thinking...", "ai", "msg-thinking");
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/chat", {
+        const response = await fetch("https://notional-alfonzo-rodlike.ngrok-free.dev/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                message: text
-            })
+            body: JSON.stringify({ message: text })
         });
 
         const data = await response.json();
@@ -1044,10 +1032,11 @@
         console.error(err);
         const thinkingMsg = document.getElementById("msg-thinking");
         if (thinkingMsg) {
-            thinkingMsg.textContent = "❌ Local AI server not running.";
+            thinkingMsg.textContent = "❌ AI server offline.";
         }
     }
 };
+
 
 
         // Water tracking
